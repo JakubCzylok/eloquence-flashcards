@@ -1,9 +1,9 @@
 ---
 change_id: seed-vocabulary-and-local-storage
 title: On-device vocabulary store (seed dataset + known/unknown persistence)
-status: implementing
+status: implemented
 created: 2026-08-25
-updated: 2026-08-25
+updated: 2026-08-26
 archived_at: null
 ---
 

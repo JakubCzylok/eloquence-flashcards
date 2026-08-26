@@ -163,11 +163,11 @@ The dataset is ~70 words (a few KB of JSON) — well within AsyncStorage's pract
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — cf8c395
+- [x] 2.2 Linting passes: `npm run lint` — cf8c395
 
 #### Manual
 
-- [x] 2.3 All ~70 seed words render with word, definition, and category at `/debug-vocabulary`
-- [x] 2.4 Tapping a word toggles its known/unknown indicator immediately
-- [x] 2.5 State survives a full app restart
+- [x] 2.3 All ~70 seed words render with word, definition, and category at `/debug-vocabulary` — cf8c395
+- [x] 2.4 Tapping a word toggles its known/unknown indicator immediately — cf8c395
+- [x] 2.5 State survives a full app restart — cf8c395
