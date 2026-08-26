@@ -150,24 +150,24 @@ The dataset is ~70 words (a few KB of JSON) — well within AsyncStorage's pract
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx tsc --noEmit`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 `@react-native-async-storage/async-storage` appears in `package.json` dependencies
+- [x] 1.1 Type checking passes: `npx tsc --noEmit` — 6a20342
+- [x] 1.2 Linting passes: `npm run lint` — 6a20342
+- [x] 1.3 `@react-native-async-storage/async-storage` appears in `package.json` dependencies — 6a20342
 
 #### Manual
 
-- [x] 1.4 Skim `SEED_VOCABULARY` for duplicate `id`s or category typos
-- [x] 1.5 Confirm each of the 9 categories has at least 5 words
+- [x] 1.4 Skim `SEED_VOCABULARY` for duplicate `id`s or category typos — 6a20342
+- [x] 1.5 Confirm each of the 9 categories has at least 5 words — 6a20342
 
 ### Phase 2: Debug verification screen
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 All ~70 seed words render with word, definition, and category at `/debug-vocabulary`
-- [ ] 2.4 Tapping a word toggles its known/unknown indicator immediately
-- [ ] 2.5 State survives a full app restart
+- [x] 2.3 All ~70 seed words render with word, definition, and category at `/debug-vocabulary`
+- [x] 2.4 Tapping a word toggles its known/unknown indicator immediately
+- [x] 2.5 State survives a full app restart

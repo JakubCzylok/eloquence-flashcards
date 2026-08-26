@@ -27,6 +27,10 @@ export default function AppTabs() {
           <TabTrigger name="explore" href="/explore" asChild>
             <TabButton>Explore</TabButton>
           </TabTrigger>
+          {/* Temporary — reachability for the F-01 debug screen. Remove alongside src/app/debug-vocabulary.tsx. */}
+          <TabTrigger name="debug-vocabulary" href="/debug-vocabulary" asChild>
+            <TabButton>Debug</TabButton>
+          </TabTrigger>
         </CustomTabList>
       </TabList>
     </Tabs>
