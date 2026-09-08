@@ -24,7 +24,7 @@ A developer opens the app, navigates to a temporary debug route, sees the full s
 - No matching/ranking algorithm — `S-01`'s scope, per the roadmap's Foundation Scope Cap.
 - No manual "add flashcard" UI (`FR-004`) — Parked in the roadmap.
 - No test runner setup (Jest, etc.) — user chose the throwaway debug-screen verification path over introducing a new test framework this late in the 2-day timeline.
-- No permanent navigation entry for the debug screen — it's a throwaway route, not wired into `AppTabs`.
+- No permanent navigation entry for the debug screen — it's a throwaway route, not wired into `AppTabs`. **(Superseded during implementation: a temporary `debug-vocabulary` tab trigger was added to both `AppTabs` files to make the route reachable — see `change.md` "Deviation from plan.md (Phase 2)" and the updated Migration Notes below.)**
 - No SQLite/MMKV — user chose AsyncStorage.
 - No difficulty/frequency scoring field on vocabulary words — user chose the plain category-enum shape.
 - No reset-all-progress action — known state is deprioritized, never deleted or reset, per user's choice.
@@ -92,7 +92,7 @@ A temporary, throwaway route that exercises the Phase 1 module end-to-end: list 
 
 **Intent**: Prove the `F-01` storage contract works end-to-end without waiting for `S-01`'s real UI — render the full seed list with each word's category and current known/unknown status, let the developer tap a word to toggle its state via `setWordKnownState`, and reload state via `getKnownState` on mount so a full app restart visibly preserves prior taps.
 
-**Contract**: `export default function DebugVocabularyScreen()`, follows existing screen conventions (`ThemedView`/`ThemedText` from `@/components`, `StyleSheet.create()` at the bottom). Reached only via the direct route `/debug-vocabulary` during manual testing — no entry is added to `AppTabs`.
+**Contract**: `export default function DebugVocabularyScreen()`, follows existing screen conventions (`ThemedView`/`ThemedText` from `@/components`, `StyleSheet.create()` at the bottom). Reached only via the direct route `/debug-vocabulary` during manual testing — no entry is added to `AppTabs`. **(Superseded during implementation — a temporary tab trigger was required for reachability; see `change.md` and Migration Notes.)**
 
 ### Success Criteria:
 
@@ -135,6 +135,8 @@ The dataset is ~70 words (a few KB of JSON) — well within AsyncStorage's pract
 ## Migration Notes
 
 `src/app/debug-vocabulary.tsx` is throwaway. Once `S-01` ships a real UI over the same `vocabulary-store.ts` functions, either delete the debug route or leave it as a permanent dev-only route — no FR requires either choice, so it's a judgment call at that point.
+
+If the debug route is deleted, also remove the temporary `debug-vocabulary` `<Trigger>` block (marked with a "Temporary" comment) from **both** `src/components/app-tabs.tsx` and `src/components/app-tabs.web.tsx` — it was added during implementation only so the route was reachable through the closed-set tab navigators.
 
 ## References
 
