@@ -4,8 +4,11 @@ import { SEED_VOCABULARY, VocabularyCategory, VocabularyWord } from '@/constants
 /**
  * Canonical category ordering, used only for deterministic tie-breaking when two
  * categories score equally. Mirrors the `VocabularyCategory` union order.
+ *
+ * Exported so tests can assert it stays in sync with `CATEGORY_KEYWORDS` — TypeScript
+ * does not enforce that this bare array covers the `VocabularyCategory` union.
  */
-const CATEGORY_ORDER: VocabularyCategory[] = [
+export const CATEGORY_ORDER: VocabularyCategory[] = [
   'business',
   'academic',
   'arts-culture',
