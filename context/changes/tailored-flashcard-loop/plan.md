@@ -517,13 +517,13 @@ rendered one card at a time, not as a long list.
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx tsc --noEmit`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Tests pass: `npm test`
-- [x] 3.4 `grep -rn "debug-vocabulary" src/` returns nothing
+- [x] 3.1 Type checking passes: `npx tsc --noEmit` — d9a0747
+- [x] 3.2 Linting passes: `npm run lint` — d9a0747
+- [x] 3.3 Tests pass: `npm test` — d9a0747
+- [x] 3.4 `grep -rn "debug-vocabulary" src/` returns nothing — d9a0747
 
 #### Manual
 
-- [x] 3.5 Tab bar shows only Home and Explore, no "Debug" tab
-- [x] 3.6 `/debug-vocabulary` no longer resolves
-- [x] 3.7 The loop screen still works end to end
+- [x] 3.5 Tab bar shows only Home and Explore, no "Debug" tab — d9a0747
+- [x] 3.6 `/debug-vocabulary` no longer resolves — d9a0747
+- [x] 3.7 The loop screen still works end to end — d9a0747

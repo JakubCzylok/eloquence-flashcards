@@ -1,7 +1,7 @@
 ---
 change_id: tailored-flashcard-loop
 title: Tailored flashcard loop (description → ranked card → mark known/unknown → next)
-status: implementing
+status: implemented
 created: 2026-09-08
 updated: 2026-09-08
 archived_at: null
