@@ -321,14 +321,14 @@ None. The suite runs `rankVocabulary` (a sort over ≤72 elements) a few dozen t
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx tsc --noEmit`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Tests pass: `npm test` (all green, incl. the two `it.failing` cases)
-- [x] 1.4 Suite count grew (R2 matrix + tier + tie + `CATEGORY_ORDER` sync + R1 Part A/B all present)
+- [x] 1.1 Type checking passes: `npx tsc --noEmit` — 913c868
+- [x] 1.2 Linting passes: `npm run lint` — 913c868
+- [x] 1.3 Tests pass: `npm test` (all green, incl. the two `it.failing` cases) — 913c868
+- [x] 1.4 Suite count grew (R2 matrix + tier + tie + `CATEGORY_ORDER` sync + R1 Part A/B all present) — 913c868
 
 #### Manual
 
-- [x] 1.5 Human confirmed every row of the R1 Part A + Part B tables (oracle-ownership gate)
-- [x] 1.6 File skim: no assertion computes its expected value via `rankVocabulary` / `matchedCategories`
-- [x] 1.7 Both `it.failing` cases carry a comment naming the limitation
-- [x] 1.8 `test-plan.md` §6.1 and §6.4 cookbook entries filled in
+- [x] 1.5 Human confirmed every row of the R1 Part A + Part B tables (oracle-ownership gate) — 913c868
+- [x] 1.6 File skim: no assertion computes its expected value via `rankVocabulary` / `matchedCategories` — 913c868
+- [x] 1.7 Both `it.failing` cases carry a comment naming the limitation — 913c868
+- [x] 1.8 `test-plan.md` §6.1 and §6.4 cookbook entries filled in — 913c868
