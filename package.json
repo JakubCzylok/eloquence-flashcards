@@ -29,6 +29,7 @@
     "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@react-native/jest-preset": "^0.86.3",
     "@types/jest": "29.5.14",
     "@types/react": "~19.2.2",
@@ -45,13 +46,21 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "jest"
+    "test": "jest",
+    "e2e": "playwright test"
   },
   "jest": {
     "preset": "jest-expo",
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
-    }
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/e2e/"
+    ]
   },
   "private": true
 }

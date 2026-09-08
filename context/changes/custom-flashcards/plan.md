@@ -364,14 +364,14 @@ branch runs before S-02 merges, add the mock here and expect a same-content merg
 
 #### Automated
 
-- [ ] 1.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 1.2 Linting passes: `npm run lint`
-- [ ] 1.3 Tests pass: `npm test`
-- [ ] 1.4 `npm test` runs the new `user-vocabulary.test.ts` cases (non-zero count, all green)
+- [x] 1.1 Type checking passes: `npx tsc --noEmit`
+- [x] 1.2 Linting passes: `npm run lint`
+- [x] 1.3 Tests pass: `npm test`
+- [x] 1.4 `npm test` runs the new `user-vocabulary.test.ts` cases (non-zero count, all green)
 
 #### Manual
 
-- [ ] 1.5 Scratch-script: `addUserWord` then `rankVocabulary(<matching desc>, {}, {}, await getAllVocabulary())` shows the custom word in its category tier and the result is a permutation
+- [x] 1.5 Scratch-script: `addUserWord` then `rankVocabulary(<matching desc>, {}, {}, await getAllVocabulary())` shows the custom word in its category tier and the result is a permutation (automated as the "plan step 1.5" test in `src/lib/vocabulary-store.test.ts`)
 
 ### Phase 2: Manage-cards UI
 

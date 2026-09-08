@@ -252,3 +252,47 @@ describe('rankVocabulary — contract lock: relevance (Risk #1)', () => {
     },
   );
 });
+
+// ── S-03: custom deck (the `deck` parameter) ─────────────────────────────────
+// rankVocabulary ranks whatever deck it is handed. The loop screen passes the
+// merged seed + user-authored deck; a user card must rank by category exactly
+// like a seed word, and the permutation invariant must hold over the given deck.
+describe('rankVocabulary — custom deck (Risk #2, S-03 deck parameter)', () => {
+  const userWord: VocabularyWord = {
+    id: 'user-perspicacity',
+    word: 'perspicacity',
+    definition: 'a made-up-for-the-test card in the business category',
+    category: 'business',
+  };
+  const deck = [...seed, userWord];
+
+  it('ranks a user card in its category ahead of unmatched-category words', () => {
+    const ranked = rankVocabulary("my new startup's investor", {}, deck);
+    const userIdx = ranked.findIndex((w) => w.id === 'user-perspicacity');
+    const unmatchedIdx = ranked.findIndex((w) => w.category === 'food-cuisine');
+    expect(userIdx).toBeGreaterThanOrEqual(0);
+    expect(userIdx).toBeLessThan(unmatchedIdx);
+  });
+
+  it('sinks a known user card below equally-relevant unknown words', () => {
+    const ranked = rankVocabulary("my new startup's investor", { 'user-perspicacity': true }, deck);
+    const businessNotKnown = seed.filter((w) => w.category === 'business');
+    const userIdx = ranked.findIndex((w) => w.id === 'user-perspicacity');
+    const lastUnknownBusinessIdx = Math.max(
+      ...businessNotKnown.map((w) => ranked.findIndex((r) => r.id === w.id)),
+    );
+    expect(userIdx).toBeGreaterThan(lastUnknownBusinessIdx);
+  });
+
+  it('is a permutation of whatever deck it is given', () => {
+    const ranked = rankVocabulary('gibberish that matches nothing', {}, deck);
+    expect(ranked).toHaveLength(deck.length);
+    expect(new Set(ranked.map((w) => w.id))).toEqual(new Set(deck.map((w) => w.id)));
+  });
+
+  it('defaults to SEED_VOCABULARY when no deck is passed', () => {
+    expect(idsOf(rankVocabulary('startup investor', {}))).toEqual(
+      idsOf(rankVocabulary('startup investor', {}, seed)),
+    );
+  });
+});

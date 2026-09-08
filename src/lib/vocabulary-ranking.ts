@@ -66,7 +66,7 @@ const STOPWORDS = new Set([
   'not',
 ]);
 
-/** Lowercase the description and split it into a set of matchable tokens. */
+/** Lowercase the description and split it into a set of matchable, deduped tokens. */
 function tokenize(description: string): Set<string> {
   return new Set(
     description
@@ -126,29 +126,34 @@ function roundRobin(
 }
 
 /**
- * Rank the full seed vocabulary against a free-text description of the person /
+ * Rank a vocabulary deck against a free-text description of the person /
  * interests the user is about to talk to.
  *
  * Pure and deterministic — no randomness, no clock, no external state. The result
- * is always a permutation of `SEED_VOCABULARY`: every word appears exactly once,
- * so the caller can treat it as both the ranked result and the "no dead-ends"
- * fallback for input that matches nothing.
+ * is always a permutation of `deck`: every word appears exactly once, so the
+ * caller can treat it as both the ranked result and the "no dead-ends" fallback
+ * for input that matches nothing.
+ *
+ * `deck` defaults to `SEED_VOCABULARY`. The loop screen passes the merged deck
+ * (seed + user-authored cards) from `getAllVocabulary()`; user cards bucket by
+ * `category` exactly like seed words.
  *
  * Order:
  *   1. matched-category words the user has NOT marked known (round-robin across
  *      matched categories, most-relevant category first)
  *   2. matched-category words the user HAS marked known (same round-robin)
- *   3. remaining words the user has NOT marked known (seed order)
- *   4. remaining words the user HAS marked known (seed order)
+ *   3. remaining words the user has NOT marked known (deck order)
+ *   4. remaining words the user HAS marked known (deck order)
  *
  * When no category matches, steps 1–2 are empty and the result is the whole deck
- * in not-known-then-known, seed order.
+ * in not-known-then-known, deck order.
  */
 export function rankVocabulary(
   description: string,
   knownState: Record<string, boolean>,
+  deck: VocabularyWord[] = SEED_VOCABULARY,
 ): VocabularyWord[] {
-  const seed = SEED_VOCABULARY;
+  const seed = deck;
   const matched = matchedCategories(tokenize(description));
   const matchedSet = new Set(matched);
   const isKnown = (word: VocabularyWord) => knownState[word.id] === true;
