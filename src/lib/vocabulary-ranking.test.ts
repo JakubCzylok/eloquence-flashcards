@@ -7,11 +7,12 @@ const seed = SEED_VOCABULARY;
 const idsOf = (words: { id: string }[]) => words.map((w) => w.id);
 
 describe('rankVocabulary', () => {
-  it('puts a word from the matched category first for a single-topic description', () => {
-    const knownState: Record<string, boolean> = {};
-    const ranked = rankVocabulary("my new startup's investor", knownState);
+  it('puts a not-known word from the matched category first for a single-topic description', () => {
+    const firstBusinessId = seed.filter((w) => w.category === 'business')[0].id;
+    // even the most-relevant category word is deprioritized once it is marked known
+    const ranked = rankVocabulary("my new startup's investor", { [firstBusinessId]: true });
     expect(ranked[0].category).toBe('business');
-    expect(knownState[ranked[0].id]).toBeUndefined(); // not a known word
+    expect(ranked[0].id).not.toBe(firstBusinessId);
   });
 
   it('interleaves multiple categories for a multi-topic description', () => {

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Flashcard } from '@/components/flashcard';
@@ -21,6 +21,7 @@ export default function HomeScreen() {
   const [queue, setQueue] = useState<VocabularyWord[]>([]);
   const [index, setIndex] = useState(0);
   const [knownState, setKnownState] = useState<Record<string, boolean>>({});
+  const markingRef = useRef(false);
 
   const loadKnownState = useCallback(() => {
     getKnownState().then(setKnownState);
@@ -43,17 +44,24 @@ export default function HomeScreen() {
 
   const handleMark = useCallback(
     async (known: boolean) => {
+      if (markingRef.current) {
+        return;
+      }
       const word = queue[index];
       if (!word) {
         return;
       }
-      await setWordKnownState(word.id, known);
+      markingRef.current = true;
+      try {
+        await setWordKnownState(word.id, known);
+      } finally {
+        markingRef.current = false;
+      }
       setKnownState((prev) => ({ ...prev, [word.id]: known }));
-      const next = index + 1;
-      if (next >= queue.length) {
+      if (index + 1 >= queue.length) {
         setPhase('done');
       } else {
-        setIndex(next);
+        setIndex(index + 1);
       }
     },
     [queue, index],
@@ -69,8 +77,11 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        {phase === 'input' && (
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <SafeAreaView style={styles.safeArea}>
+          {phase === 'input' && (
           <ThemedView style={styles.inputBlock}>
             <ThemedText type="title" style={styles.heading}>
               Who are you about to talk to?
@@ -83,10 +94,8 @@ export default function HomeScreen() {
               value={description}
               onChangeText={setDescription}
               placeholder={PLACEHOLDER}
-              multiline
               returnKeyType="go"
               onSubmitEditing={handleSubmit}
-              style={styles.field}
             />
             <Pressable onPress={handleSubmit} disabled={!trimmed}>
               <ThemedView
@@ -128,7 +137,8 @@ export default function HomeScreen() {
             </Pressable>
           </ThemedView>
         )}
-      </SafeAreaView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </ThemedView>
   );
 }
@@ -138,6 +148,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
+  },
+  keyboardView: {
+    flex: 1,
+    width: '100%',
+    maxWidth: MaxContentWidth,
   },
   safeArea: {
     flex: 1,
@@ -156,10 +171,6 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 28,
     lineHeight: 34,
-  },
-  field: {
-    minHeight: 96,
-    textAlignVertical: 'top',
   },
   submitButton: {
     paddingVertical: Spacing.three,
