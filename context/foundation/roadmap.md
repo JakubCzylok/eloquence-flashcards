@@ -30,9 +30,10 @@ Young adults freeze up when talking to people who feel more educated or articula
 | ID   | Change ID                        | Outcome (user can …)                                                          | Prerequisites | PRD refs                    | Status   |
 | ---- | --------------------------------- | ------------------------------------------------------------------------------ | -------------- | ---------------------------- | -------- |
 | F-01 | seed-vocabulary-and-local-storage | (foundation) on-device word store: seed vocabulary dataset + known/unknown state | —              | Business Logic, NFRs         | done     |
-| S-01 | tailored-flashcard-loop           | input a description and complete the description → card → mark loop           | F-01           | US-01, FR-001, FR-002, FR-003 | in progress |
-| S-02 | adaptive-card-ranking             | see the ranking improve over sessions — struggled words rise, known words sink | S-01           | Success Criteria (Secondary), Business Logic | proposed |
-| S-03 | custom-flashcards                 | add / edit / remove their own word cards that then rank alongside the seed deck | S-01           | FR-004                       | proposed |
+| S-01 | tailored-flashcard-loop           | input a description and complete the description → card → mark loop           | F-01           | US-01, FR-001, FR-002, FR-003 | done     |
+| S-02 | adaptive-card-ranking             | see the ranking improve over sessions — struggled words rise, known words sink | S-01           | Success Criteria (Secondary), Business Logic | planned  |
+| S-03 | custom-flashcards                 | add / edit / remove their own word cards that then rank alongside the seed deck | S-01           | FR-004                       | planned  |
+| S-04 | words-progress-view              | open a review view listing words split into known / still-learning / not-yet-reviewed | S-01 (after S-02, S-03) | — (supports the Secondary criterion's visibility) | proposed |
 
 ## Baseline
 
@@ -102,6 +103,20 @@ What's already in place in the codebase as of `2026-08-25` (auto-probed + user-c
   - Whether user words require a category, or get an "uncategorised" bucket the ranker treats as always-eligible. Owner: user/team. Block: no.
   - Whether edit/delete is in this slice or a follow-up. Owner: user/team. Block: no.
 - **Risk:** FR-004 is explicitly nice-to-have and the PRD says revisit "after the MVP validates the curated deck" — so this slice must not precede real usage of S-01. Sequenced after, risk is contained: it is additive to the deck-read path and changes no matching logic.
+- **Status:** planned
+
+### S-04: Words progress view
+
+- **Outcome:** from the loop's input screen the user opens a read-only review view that lists the vocabulary split into "Known" (marked known), "Still learning" (marked unknown), and "Not reviewed yet" (never marked), so they can see what they have covered. Once S-03 has landed, user-authored cards appear in the same lists.
+- **Change ID:** words-progress-view
+- **PRD refs:** none directly — no FR mandates it. Supports the spirit of the Secondary Success Criterion (visible sense that the deck is adapting) and general retention/motivation.
+- **Prerequisites:** S-01 (the loop screen + `getKnownState()`). **Sequenced after S-02 and S-03**, not because of a logic dependency but because all three add a new `phase` + entry button to `src/app/index.tsx` — stacking a third one on `master` while S-02/S-03 are unmerged on branches would force extra `index.tsx` rebase conflicts on both.
+- **Parallel with:** — (sequenced after S-02/S-03)
+- **Blockers:** —
+- **Unknowns:**
+  - Whether "Not reviewed yet" is a useful third bucket or just noise at 72 words. Owner: user/team. Block: no.
+  - Whether the view is purely read-only or also lets the user re-mark a word from the list. Owner: user/team. Block: no — read-only is the smaller starting point.
+- **Risk:** Low — a read-only view over data that already exists (`getKnownState()` + `getSeedVocabulary()` / `getAllVocabulary()`), no new storage, no new dependency, no change to the matcher. Main cost is the list UI.
 - **Status:** proposed
 
 ## Backlog Handoff
@@ -109,9 +124,10 @@ What's already in place in the codebase as of `2026-08-25` (auto-probed + user-c
 | Roadmap ID | Change ID                        | Suggested issue title                                                      | Ready for `/10x-plan` | Notes                                       |
 | ---------- | --------------------------------- | ---------------------------------------------------------------------------- | ---------------------- | -------------------------------------------- |
 | F-01       | seed-vocabulary-and-local-storage | Set up on-device vocabulary store (seed dataset + known/unknown persistence) | done                   | Merged; impl-reviewed                        |
-| S-01       | tailored-flashcard-loop           | Build the tailored flashcard loop (input → matched card → mark known/unknown) | in progress            | Planned + implementing (Phase 1)             |
-| S-02       | adaptive-card-ranking             | Make the ranking adapt to known/unknown history over sessions               | no                     | Blocked behind S-01; run `/10x-new adaptive-card-ranking` when ready |
-| S-03       | custom-flashcards                 | Let the user add / edit / remove their own flashcards                        | no                     | Blocked behind S-01 usage; promoted from Parked (FR-004) |
+| S-01       | tailored-flashcard-loop           | Build the tailored flashcard loop (input → matched card → mark known/unknown) | done                   | Implemented + impl-reviewed (2026-09-08)     |
+| S-02       | adaptive-card-ranking             | Make the ranking adapt to known/unknown history over sessions               | yes                    | Planned; worktree `feat/adaptive-card-ranking`; merges before S-03 |
+| S-03       | custom-flashcards                 | Let the user add / edit / remove their own flashcards                        | yes                    | Planned; worktree `feat/custom-flashcards`; rebases onto S-02 |
+| S-04       | words-progress-view              | Review view: words split into known / still-learning / not-yet-reviewed      | no                     | Blocked behind S-02 + S-03 landing (shared `index.tsx` surface); run `/10x-plan words-progress-view` then |
 
 ## Open Roadmap Questions
 
@@ -132,4 +148,5 @@ What's already in place in the codebase as of `2026-08-25` (auto-probed + user-c
 ## Done
 
 - **F-01: On-device vocabulary store** (`seed-vocabulary-and-local-storage`) — implemented and impl-reviewed (2026-09-08). Ships `getSeedVocabulary()` / `getKnownState()` / `setWordKnownState()` over AsyncStorage; 72-word seed deck across 9 categories.
+- **S-01: Tailored flashcard loop** (`tailored-flashcard-loop`) — implemented and impl-reviewed (2026-09-08). The description → ranked card → mark known/unknown → next loop; pure rule-based `rankVocabulary()`; replaced the template home screen; F-01 debug surface removed. `jest-expo` test runner introduced.
 
