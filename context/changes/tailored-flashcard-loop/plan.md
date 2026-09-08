@@ -484,34 +484,34 @@ rendered one card at a time, not as a long list.
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx tsc --noEmit`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Tests pass: `npm test`
-- [x] 1.4 `jest-expo` in `package.json` devDependencies and `npm test` runs a non-zero number of tests
+- [x] 1.1 Type checking passes: `npx tsc --noEmit` — 94dcf1f
+- [x] 1.2 Linting passes: `npm run lint` — 94dcf1f
+- [x] 1.3 Tests pass: `npm test` — 94dcf1f
+- [x] 1.4 `jest-expo` in `package.json` devDependencies and `npm test` runs a non-zero number of tests — 94dcf1f
 
 #### Manual
 
-- [x] 1.5 `rankVocabulary()` output for 3–4 realistic descriptions has recognisably on-topic top words
-- [x] 1.6 `CATEGORY_KEYWORDS` skimmed for miscategorisations / thin categories
+- [x] 1.5 `rankVocabulary()` output for 3–4 realistic descriptions has recognisably on-topic top words — 94dcf1f
+- [x] 1.6 `CATEGORY_KEYWORDS` skimmed for miscategorisations / thin categories — 94dcf1f
 
 ### Phase 2: The loop screen
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Tests pass: `npm test`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Tests pass: `npm test`
 
 #### Manual
 
-- [ ] 2.4 Home tab shows the description input on launch
-- [ ] 2.5 Single-topic description yields a relevant card; both mark buttons advance with no lag
-- [ ] 2.6 Multi-topic description's first several cards span more than one interest
-- [ ] 2.7 A known-marked word sorts below equally-relevant unknown words on a new description
-- [ ] 2.8 Gibberish input still produces a card, no crash
-- [ ] 2.9 Exhausting a queue shows the terminal state with a working "new description" button
-- [ ] 2.10 "New description" from the card phase returns to input with the previous text pre-filled
-- [ ] 2.11 After a full app restart the input is empty but known-state persisted
+- [x] 2.4 Home tab shows the description input on launch
+- [x] 2.5 Single-topic description yields a relevant card; both mark buttons advance with no lag
+- [x] 2.6 Multi-topic description's first several cards span more than one interest
+- [x] 2.7 A known-marked word sorts below equally-relevant unknown words on a new description
+- [x] 2.8 Gibberish input still produces a card, no crash
+- [x] 2.9 Exhausting a queue shows the terminal state with a working "new description" button
+- [x] 2.10 "New description" from the card phase returns to input with the previous text pre-filled
+- [x] 2.11 After a full app restart the input is empty but known-state persisted
 
 ### Phase 3: Remove F-01 debug surface
 
