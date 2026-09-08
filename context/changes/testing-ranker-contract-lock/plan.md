@@ -161,7 +161,9 @@ ties deterministically — and add the free `CATEGORY_ORDER` sync check.
 - Add `it('concatenates the four ranking tiers in order', ...)` — for a description that
   yields both matched and unmatched words, with a knownState marking one matched and one
   unmatched word known, assert the sequence of `tierOf` values over the result is
-  non-decreasing.
+  non-decreasing. (Implemented with `"a wine sommelier"` — matches `food-cuisine` only —
+  not the `"startup founder"` this line first suggested: `startup` is dual-tagged
+  `business` + `science-tech`, so it does not give a single-category matched set.)
 - Add `it('breaks a three-category score tie deterministically by CATEGORY_ORDER', ...)` —
   for `'my married coworker who loves cycling'` with `{}`, assert
   `ranked.slice(0, 3).map(w => w.category)` equals `['business', 'sports-fitness', 'family-relationships']`

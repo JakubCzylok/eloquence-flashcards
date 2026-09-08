@@ -89,11 +89,15 @@ function assertRankInvariants(cases: RankCase[]): void {
     const deck = c.deck ?? SEED_VOCABULARY;
     const deckIds = new Set(deck.map((w) => w.id));
 
-    expect(idsOf(c.run())).toEqual(idsOf(c.run()));
+    const first = c.run();
+    const second = c.run();
 
-    const result = c.run();
-    expect(result).toHaveLength(deck.length);
-    expect(new Set(result.map((w) => w.id))).toEqual(deckIds);
+    // determinism: identical arguments → identical id order
+    expect(idsOf(first)).toEqual(idsOf(second));
+
+    // permutation: exactly the deck it was given, every id once
+    expect(first).toHaveLength(deck.length);
+    expect(new Set(first.map((w) => w.id))).toEqual(deckIds);
   }
 }
 
