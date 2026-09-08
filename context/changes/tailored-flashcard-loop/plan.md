@@ -498,32 +498,32 @@ rendered one card at a time, not as a long list.
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Tests pass: `npm test`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — 940e3a0
+- [x] 2.2 Linting passes: `npm run lint` — 940e3a0
+- [x] 2.3 Tests pass: `npm test` — 940e3a0
 
 #### Manual
 
-- [x] 2.4 Home tab shows the description input on launch
-- [x] 2.5 Single-topic description yields a relevant card; both mark buttons advance with no lag
-- [x] 2.6 Multi-topic description's first several cards span more than one interest
-- [x] 2.7 A known-marked word sorts below equally-relevant unknown words on a new description
-- [x] 2.8 Gibberish input still produces a card, no crash
-- [x] 2.9 Exhausting a queue shows the terminal state with a working "new description" button
-- [x] 2.10 "New description" from the card phase returns to input with the previous text pre-filled
-- [x] 2.11 After a full app restart the input is empty but known-state persisted
+- [x] 2.4 Home tab shows the description input on launch — 940e3a0
+- [x] 2.5 Single-topic description yields a relevant card; both mark buttons advance with no lag — 940e3a0
+- [x] 2.6 Multi-topic description's first several cards span more than one interest — 940e3a0
+- [x] 2.7 A known-marked word sorts below equally-relevant unknown words on a new description — 940e3a0
+- [x] 2.8 Gibberish input still produces a card, no crash — 940e3a0
+- [x] 2.9 Exhausting a queue shows the terminal state with a working "new description" button — 940e3a0
+- [x] 2.10 "New description" from the card phase returns to input with the previous text pre-filled — 940e3a0
+- [x] 2.11 After a full app restart the input is empty but known-state persisted — 940e3a0
 
 ### Phase 3: Remove F-01 debug surface
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Tests pass: `npm test`
-- [ ] 3.4 `grep -rn "debug-vocabulary" src/` returns nothing
+- [x] 3.1 Type checking passes: `npx tsc --noEmit`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Tests pass: `npm test`
+- [x] 3.4 `grep -rn "debug-vocabulary" src/` returns nothing
 
 #### Manual
 
-- [ ] 3.5 Tab bar shows only Home and Explore, no "Debug" tab
-- [ ] 3.6 `/debug-vocabulary` no longer resolves
-- [ ] 3.7 The loop screen still works end to end
+- [x] 3.5 Tab bar shows only Home and Explore, no "Debug" tab
+- [x] 3.6 `/debug-vocabulary` no longer resolves
+- [x] 3.7 The loop screen still works end to end

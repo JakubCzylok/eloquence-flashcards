@@ -27,11 +27,6 @@ export default function AppTabs() {
           renderingMode="template"
         />
       </NativeTabs.Trigger>
-
-      {/* Temporary — reachability for the F-01 debug screen. Remove alongside src/app/debug-vocabulary.tsx. */}
-      <NativeTabs.Trigger name="debug-vocabulary">
-        <NativeTabs.Trigger.Label>Debug</NativeTabs.Trigger.Label>
-      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
