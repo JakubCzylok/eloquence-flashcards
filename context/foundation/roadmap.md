@@ -32,7 +32,8 @@ Young adults freeze up when talking to people who feel more educated or articula
 | F-01 | seed-vocabulary-and-local-storage | (foundation) on-device word store: seed vocabulary dataset + known/unknown state | —              | Business Logic, NFRs         | done     |
 | S-01 | tailored-flashcard-loop           | input a description and complete the description → card → mark loop           | F-01           | US-01, FR-001, FR-002, FR-003 | done     |
 | S-02 | adaptive-card-ranking             | see the ranking improve over sessions — struggled words rise, known words sink | S-01           | Success Criteria (Secondary), Business Logic | planned  |
-| S-03 | custom-flashcards                 | add / edit / remove their own word cards that then rank alongside the seed deck | S-01           | FR-004                       | planned  |
+| S-03 | custom-flashcards                 | add / edit / remove their own word cards that then rank alongside the seed deck | S-01           | FR-004                       | done     |
+| F-02 | auth                              | (foundation) sign in with email + password; known-state and cards move to per-user Supabase tables with RLS | S-01, S-03     | Access Control, NFRs         | done     |
 | S-04 | words-progress-view              | open a review view listing words split into known / still-learning / not-yet-reviewed | S-01 (after S-02, S-03) | — (supports the Secondary criterion's visibility) | proposed |
 
 ## Baseline
@@ -42,7 +43,7 @@ What's already in place in the codebase as of `2026-08-25` (auto-probed + user-c
 - **Frontend:** partial — Expo Router scaffold present (`src/app/_layout.tsx`, `src/app/index.tsx`, `src/app/explore.tsx` are the default template screens; `expo-router` and `react-native-web` are in `package.json`), but zero app-specific screens or components exist yet.
 - **Backend / API:** absent — architecturally excluded, not a gap. PRD requires on-device-only operation with no network calls (`## Non-Functional Requirements`, `## Access Control`).
 - **Data:** absent — no persistence library in `package.json` (no AsyncStorage/SQLite/MMKV), no vocabulary dataset or data model anywhere in the repo.
-- **Auth:** absent — architecturally excluded, not a gap. PRD `## Access Control`: "Single user; no auth; data lives on-device only."
+- **Auth:** absent at baseline — the PRD originally excluded it ("Single user; no auth; data lives on-device only"). _Added later in change `F-02 / auth` once the 10xBuilder authentication requirement made it necessary — see Done._
 - **Deploy / infra:** partial — EAS is configured and verified this session (`eas.json` present; first Android preview build finished successfully — see `context/deployment/deploy-plan.md`). A public GitHub repo exists (https://github.com/JakubCzylok/eloquence-flashcards) but no CI/CD workflow is wired.
 - **Observability:** absent — no crash reporting or logging library. Explicitly out of scope for MVP per `context/foundation/infrastructure.md`.
 
@@ -149,4 +150,6 @@ What's already in place in the codebase as of `2026-08-25` (auto-probed + user-c
 
 - **F-01: On-device vocabulary store** (`seed-vocabulary-and-local-storage`) — implemented and impl-reviewed (2026-09-08). Ships `getSeedVocabulary()` / `getKnownState()` / `setWordKnownState()` over AsyncStorage; 72-word seed deck across 9 categories.
 - **S-01: Tailored flashcard loop** (`tailored-flashcard-loop`) — implemented and impl-reviewed (2026-09-08). The description → ranked card → mark known/unknown → next loop; pure rule-based `rankVocabulary()`; replaced the template home screen; F-01 debug surface removed. `jest-expo` test runner introduced.
+- **S-03: Custom flashcards** (`custom-flashcards`) — implemented (2026-09-10, `dffa39a` / `11e3763`). Add / edit / delete user-authored cards from a "Manage my cards" view; they rank alongside the seed deck via a new `deck` parameter on `rankVocabulary`. Gave the app a full CRUD surface (the 10xBuilder CRUD requirement).
+- **F-02: Auth + per-user data** (`auth`) — implemented (2026-09-10). Supabase Auth (email + password) behind a login gate on the whole app; `known_state` and `user_words` moved to per-user Postgres tables with row-level security, backed by a local read cache for offline reads; one-shot first-login adoption of pre-auth on-device data. Meets the 10xBuilder authentication requirement. Leftover Expo template chrome (tab bar, Explore screen) removed at the same time.
 

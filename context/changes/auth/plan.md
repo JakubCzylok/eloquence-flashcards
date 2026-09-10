@@ -609,26 +609,26 @@ initial load. No pagination, no indexes beyond the primary keys needed.
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx tsc --noEmit`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Tests pass: `npm test`
-- [x] 3.4 `local-migration.test.ts` covers one-shot upload, idempotent second call, failure leaves the flag unset
+- [x] 3.1 Type checking passes: `npx tsc --noEmit` — 06c261f
+- [x] 3.2 Linting passes: `npm run lint` — 06c261f
+- [x] 3.3 Tests pass: `npm test` — 06c261f
+- [x] 3.4 `local-migration.test.ts` covers one-shot upload, idempotent second call, failure leaves the flag unset — 06c261f
 
 #### Manual
 
-- [x] 3.5 First sign-in on a build with pre-auth local data uploads it to the account
-- [x] 3.6 Sign out/in causes no duplicate upload; data intact
+- [x] 3.5 First sign-in on a build with pre-auth local data uploads it to the account — 06c261f
+- [x] 3.6 Sign out/in causes no duplicate upload; data intact — 06c261f
 
 ### Phase 4: Foundation docs + test-plan risks + e2e
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 4.2 Linting passes: `npm run lint`
-- [ ] 4.3 Tests pass: `npm test`
-- [ ] 4.4 `npm run e2e` passes with Supabase env set (or skips `auth-per-user-data.spec.ts` cleanly without it); existing specs still pass behind a signed-in test session
+- [x] 4.1 Type checking passes: `npx tsc --noEmit`
+- [x] 4.2 Linting passes: `npm run lint`
+- [x] 4.3 Tests pass: `npm test`
+- [x] 4.4 `npm run e2e` passes with Supabase env set (or skips `auth-per-user-data.spec.ts` cleanly without it); existing specs still pass behind a signed-in test session
 
 #### Manual
 
-- [ ] 4.5 `prd.md` / `tech-stack.md` / `test-plan.md` describe the new model; no stale "no auth" / "fully offline" wording
-- [ ] 4.6 `auth-per-user-data.spec.ts` passes against the real project
+- [x] 4.5 `prd.md` / `tech-stack.md` / `test-plan.md` describe the new model; no stale "no auth" / "fully offline" wording
+- [x] 4.6 `auth-per-user-data.spec.ts` passes against the real project

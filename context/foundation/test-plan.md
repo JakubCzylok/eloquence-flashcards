@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-09-08 (Phase 1 implementing; §1/§2/§4/§5 revised after user review — git-history de-weighted, test-base reframed as greenfield, R2 likelihood raised to High, R7 description-privacy risk added, quality gates trimmed for a solo project)
+> Last updated: 2026-09-08 (Phase 1 complete — 20 ranker tests committed at 913c868 / 16984fa; §1/§2/§4/§5 revised after user review — git-history de-weighted, test-base reframed as greenfield, R2 likelihood raised to High, R7 description-privacy risk added, quality gates trimmed for a solo project)
 
 ## 1. Strategy
 
@@ -55,6 +55,8 @@ research's job, see §1 principle #3).
 | 5 | The loop shows a blank card or freezes with no way back to the input screen — e.g. after the last card, on a description that matches nothing, or on a screen a later feature added | High | Medium | PRD Primary Success Criterion ("no crashes/dead-ends"); S-01 plan (fallback + terminal state); roadmap S-02/S-03/S-04 each add a phase to the loop |
 | 6 | A pathological description (whitespace-only, emoji-only, very long) or a card whose word cannot be saved (only punctuation, a duplicate) crashes the loop or leaves the user with an entry they cannot delete | Low-Medium | Low-Medium | PRD (accepts a free-text description; FR-004 user-authored cards); roadmap S-03 (validation covers empty + duplicate only); abuse lens (untrusted input). Mostly contingent on S-03 shipping. |
 | 7 | The text the user typed about a real person is written to disk or sent off the device — directly violates the PRD promise that no description leaves the device | High | Low-Medium | PRD Non-Functional Requirements ("No description of a person entered by the user leaves the device"); S-01 decision (description is in-memory only); regression risk as S-02/S-03/S-04 add screens and effects around the input |
+| 8 | A logged-out user, or one whose session expired, still reaches the loop or the manage view and sees or edits data — access is no longer really gated | High | Medium | change `auth`: the gate is a single conditional render in `_layout.tsx`; a stale session token, a race between `getSession()` and first paint, or a future route added outside the gate could each bypass it |
+| 9 | A query returns rows belonging to another user — a missing, mis-scoped, or disabled RLS policy leaks known-state or cards across accounts | High | Low-Medium | change `auth`: RLS is the *only* cross-user boundary; the tables and policies are applied by hand from `supabase/schema.sql` with no CI check; a wrong `using` / `with check` clause fails silently |
 
 **Impact × Likelihood rubric.** High impact = user loses access, data, the
 product's core value, or a stated promise is broken; High likelihood = area
@@ -65,6 +67,16 @@ protect High × High first (R1, R2). R7 is High-impact × Low-Medium — kept
 because the regression path is real and the test is cheap (assert the
 description never reaches storage; assert no network module is imported),
 not because the scenario is frequent.
+
+**R8 / R9 coverage (change `auth`).** R8 is covered by `e2e/seed.spec.ts` et
+al. now starting from the login gate (they need an authenticated
+`storageState` to reach the loop at all — a broken gate fails the whole
+suite) plus `e2e/auth-per-user-data.spec.ts`'s explicit "no session → login
+screen" assertion. R9 is covered by that same spec's cross-user check
+(account B never sees account A's card — only passes if RLS + `user_id`
+scoping hold) and by the mocked-client unit tests in
+`src/lib/*.test.ts` (`__setUser` isolation). Neither is checked in CI against
+the live project.
 
 **Considered and parked (no row):** the PRD Guardrail "perceptibly instant"
 card loading. At 72 words it is sub-millisecond; a unit test would assert
@@ -92,8 +104,8 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Ranker contract lock | Realistic descriptions surface on-topic words (human-authored oracle); the permutation + determinism invariant holds across every argument form | #1, #2 | unit | implementing | context/changes/testing-ranker-contract-lock/ |
-| 2 | Storage safety net | Storage reads never throw and never silently corrupt; writes do not drop under rapid marks | #3, #4 | unit + AsyncStorage jest mock | not started | — |
+| 1 | Ranker contract lock | Realistic descriptions surface on-topic words (human-authored oracle); the permutation + determinism invariant holds across every argument form | #1, #2 | unit | complete | context/changes/testing-ranker-contract-lock/ |
+| 2 | Storage safety net | Storage reads never throw and never silently corrupt; writes do not drop under rapid marks | #3, #4 | unit + AsyncStorage jest mock | change opened | context/changes/testing-storage-safety-net/ |
 | 3 | Loop-state integrity + input & privacy hardening | No dead-end or blank state on any loop phase; pathological input does not crash or brick the app; the typed description never reaches disk or the network | #5, #6, #7 | unit on isolable phase logic + `slug` / input; static assertion for the no-persist / no-network contract; documented per-phase manual smoke | not started | — |
 | 4 | Quality-gates wiring | `npm test` + `tsc` + `expo lint` run in a test-only GitHub Actions job on PRs, and (optional, solo) a pre-commit hook, so Phases 1–3 cannot silently rot | cross-cutting | gates | not started | — |
 
@@ -233,14 +245,18 @@ contributors should respect these unless the underlying assumption changes.
   and they catch nothing meaningful at this scale. Re-evaluate if the app
   grows a design system or a visual-regression budget. (Source: Phase 2
   interview Q5.)
-- **The leftover template `Explore` screen** — it is scaffold, not
-  product. Re-evaluate if it is replaced with a real feature. (Source:
-  Phase 2 interview Q5 area; roadmap.)
-- **E2E browser / device automation (Playwright, Detox)** — the app is
-  small, single-user, and on-device; full E2E setup cost dwarfs the signal
-  now. Manual smoke plus the web-export build check is enough. Re-evaluate
-  if a multi-step flow spans navigation + storage + platform in a way unit
-  tests cannot reach. (Source: rollout scoping; interview Q5 posture.)
+- **The leftover template `Explore` screen** — removed in change `auth`
+  along with the rest of the Expo template chrome; no longer applicable.
+- **~~E2E browser / device automation~~ — adopted.** Originally excluded as
+  cost-without-signal for a small on-device app. Once the app went behind a
+  login gate and moved data to a backend (change `auth`), a browser-level
+  path became the only way to cover the gate (R8) and cross-user isolation
+  (R9), and the multi-boundary flows the exclusion named ("navigation +
+  storage + platform") now genuinely exist. Playwright against the Expo web
+  export: `e2e/` (`seed`, `loop-gibberish`, `custom-flashcards-crud`,
+  `auth-per-user-data`), a `setup` project for the shared session. Not a CI
+  gate; run with `npm run e2e` and a configured Supabase project. Detox /
+  native-device automation remains out of scope.
 
 ## 8. Freshness Ledger
 

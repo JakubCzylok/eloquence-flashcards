@@ -63,8 +63,8 @@ General young adults navigating social settings with older or more articulate pe
 ## Non-Functional Requirements
 
 - A user sees the tailored flashcard within a perceptibly instant response after submitting their description — no noticeable lag before a time-pressured conversation.
-- The app remains fully usable with no network connection; the description-to-flashcard flow does not depend on connectivity.
-- No description of a person entered by the user leaves the device.
+- The ranking loop is usable offline after a prior online load, from a local cache; sign-in and data writes (marking a word, adding / editing / deleting a card) require connectivity and fail with a clear message rather than silently. _(Relaxed from "fully usable with no network connection" in change `auth`, which moved per-user data to a backend.)_
+- No description of a person entered by the user leaves the device — it stays in React state only, is never written to storage, and is never sent to the backend.
 
 ## Business Logic
 
@@ -74,7 +74,7 @@ The rule consumes a short free-text description (person's role, interests, hobbi
 
 ## Access Control
 
-Single user; no auth; data lives on-device only. Flat single-user model — no roles, no multi-profile support in MVP.
+Access is tied to a signed-in user (Supabase Auth, email + password); the whole app sits behind a login gate. Every resource — known/unknown state and user-authored cards — is scoped to the user's id and enforced by Postgres row-level security. Flat model — no roles, no multi-profile, no organisations. _(Superseded the original "single user; no auth; data on-device only" model in change `auth`.)_
 
 ## Non-Goals
 
@@ -82,6 +82,6 @@ Single user; no auth; data lives on-device only. Flat single-user model — no r
 
 ## Open Questions
 
-1. **Should cloud sync / multi-device support ever be in scope?** — Not addressed during shaping. Owner: user. Block: no.
+1. **Should cloud sync / multi-device support ever be in scope?** — Partially resolved by change `auth`: per-user data now lives in Supabase Postgres, so a user's cards and progress follow their account across devices on the next load. Real-time multi-device sync (live updates without a reload) is still out of scope. Owner: user. Block: no.
 2. **Should a spaced-repetition scheduling algorithm (review intervals, forgetting curves) be added beyond known/unknown marking?** — Not addressed during shaping. Owner: user. Block: no.
 3. **What accessibility standard (if any) should the app target?** — Not addressed during shaping. Owner: user. Block: no.

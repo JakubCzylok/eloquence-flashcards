@@ -99,10 +99,33 @@ The solo builder wired EAS Build into a GitHub Actions auto-deploy-on-merge flow
 4. Configure build profiles: `eas build:configure` to generate `eas.json` with `development` / `preview` / `production` profiles.
 5. Run a first build on one platform (per the "one platform first is fine" interview answer): `eas build --platform android --profile preview` (or `--platform ios` if targeting iOS first) — verify the credential flow and build output before wiring up CI auto-builds.
 
+## Backend — Supabase (added in change `auth`, 2026-09-10)
+
+The 10xBuilder authentication requirement forced a backend the original research
+did not anticipate. **Supabase** is now the managed auth + database layer:
+
+- **Auth**: email + password. "Confirm email" and "Allow new users to sign up"
+  are project settings that must be ON/appropriate for the MVP sign-up flow
+  (`mailer_autoconfirm: true`, `disable_signup: false`).
+- **Database**: Postgres with row-level security. Two per-user tables —
+  `known_state` and `user_words` — each with a single `for all ... using
+  (auth.uid() = user_id) with check (auth.uid() = user_id)` policy. Schema at
+  `supabase/schema.sql`, applied by hand in the Supabase SQL editor (no
+  migration tool in the project).
+- **Security boundary**: RLS is the only cross-user boundary. The `anon` key
+  ships in the client bundle by design (`EXPO_PUBLIC_SUPABASE_*`); it grants
+  nothing without a session.
+- **Config**: `.env` holds `EXPO_PUBLIC_SUPABASE_URL` /
+  `EXPO_PUBLIC_SUPABASE_ANON_KEY` (git-ignored; the values are inlined into the
+  web/native bundle at build time regardless).
+- **Not adopted**: Supabase Edge Functions, Storage, Realtime. No CI check runs
+  against the live project; RLS correctness is covered by a manual + one e2e
+  cross-user isolation assertion.
+
 ## Out of Scope
 
 The following were not evaluated in this research:
 - Docker image configuration (not applicable — no backend/container to build).
 - CI/CD pipeline setup beyond the platform choice itself (the actual GitHub Actions workflow wiring is a separate implementation step).
-- Production-scale architecture (multi-region, HA, DR) — not applicable to a single-user, on-device MVP.
-- Backend/cloud-sync infrastructure — the PRD's Open Questions leave cloud sync undecided; if it's ever added, this research would need to be redone against the web-hosting candidate pool this skill normally uses.
+- Production-scale architecture (multi-region, HA, DR) — not applicable to this MVP.
+- Real-time multi-device sync — per-user cloud storage landed in change `auth`, but live updates without a reload remain undecided (PRD Open Question #1).

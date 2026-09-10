@@ -1,7 +1,7 @@
 ---
 change_id: auth
 title: Email/password auth with per-user cloud data (Supabase)
-status: implementing
+status: implemented
 created: 2026-09-10
 updated: 2026-09-10
 archived_at: null
@@ -107,3 +107,25 @@ External setup the user must do (cannot be automated here):
   never throw.
 - **The migrated flag is set even with nothing to migrate**, so a clean install
   does not re-check the legacy keys on every sign-in.
+
+### Phase 4
+
+- **Existing e2e specs run behind a shared session**, not per-spec logins: a
+  Playwright `setup` project (`e2e/auth.setup.ts`) signs up a throwaway user per
+  run and saves `playwright/.auth/user.json`; the `chromium` project loads it
+  via `storageState`. `auth-per-user-data.spec.ts` runs in its own
+  `chromium-auth-flow` project with NO stored session.
+- **`seed` / `loop-gibberish` specs marked `test.slow()`** and their
+  advance-through-the-queue loop now waits for the shown word to change between
+  clicks — marking is a Supabase round-trip now, so the old fire-72-clicks-fast
+  loop out-raced the card advance.
+- **`npm run e2e` now requires `.env` + a Supabase project** (the login gate
+  leaves no logged-out path to the loop). Documented in `e2e/e2e-rules.md`; the
+  "runs without a project" property is gone.
+- **Docs also touched beyond the plan's list**: `test-plan.md` §7 rewritten
+  (E2E is adopted, not excluded); `roadmap.md` Baseline "Auth: absent" given a
+  forward-pointer; `roadmap.md` S-03 status flipped `planned` → `done` (it
+  shipped this session) and an F-02 row + Done entry added.
+- **2.9 / R9 (correct `user_id` on rows)** — still verified only via the
+  cross-user isolation e2e, not a direct REST/table assertion (anon key can't
+  read `to authenticated` rows).
