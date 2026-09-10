@@ -364,29 +364,29 @@ branch runs before S-02 merges, add the mock here and expect a same-content merg
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx tsc --noEmit`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Tests pass: `npm test`
-- [x] 1.4 `npm test` runs the new `user-vocabulary.test.ts` cases (non-zero count, all green)
+- [x] 1.1 Type checking passes: `npx tsc --noEmit` — dffa39a
+- [x] 1.2 Linting passes: `npm run lint` — dffa39a
+- [x] 1.3 Tests pass: `npm test` — dffa39a
+- [x] 1.4 `npm test` runs the new `user-vocabulary.test.ts` cases (non-zero count, all green) — dffa39a
 
 #### Manual
 
-- [x] 1.5 Scratch-script: `addUserWord` then `rankVocabulary(<matching desc>, {}, {}, await getAllVocabulary())` shows the custom word in its category tier and the result is a permutation (automated as the "plan step 1.5" test in `src/lib/vocabulary-store.test.ts`)
+- [x] 1.5 Scratch-script: `addUserWord` then `rankVocabulary(<matching desc>, {}, {}, await getAllVocabulary())` shows the custom word in its category tier and the result is a permutation (automated as the "plan step 1.5" test in `src/lib/vocabulary-store.test.ts`) — dffa39a
 
 ### Phase 2: Manage-cards UI
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Tests pass: `npm test`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Tests pass: `npm test`
 
 #### Manual
 
-- [ ] 2.4 "Manage my cards" opens the manage view; "Back" returns to input
-- [ ] 2.5 Adding a card (word + definition + category) lists it
-- [ ] 2.6 The new card appears in a category-matching loop queue and can be marked known/unknown (and sinks after "Know it")
-- [ ] 2.7 Adding a duplicate word shows "already in your deck" and does not add
-- [ ] 2.8 Editing a card's definition shows the new text on its flashcard in the loop
-- [ ] 2.9 Deleting a card removes it from the list and from a matching queue
-- [ ] 2.10 No perceptible lag opening the manage view or submitting
+- [x] 2.4 "Manage my cards" opens the manage view; "Back" returns to input — automated in `e2e/custom-flashcards-crud.spec.ts`
+- [x] 2.5 Adding a card (word + definition + category) lists it — automated in `e2e/custom-flashcards-crud.spec.ts`
+- [x] 2.6 The new card appears in a category-matching loop queue and can be marked known/unknown (and sinks after "Know it") — e2e covers "appears in queue"; "sinks when known" covered by unit test `sinks a known user card below equally-relevant unknown words`
+- [x] 2.7 Adding a duplicate word shows "already in your deck" and does not add — automated in `e2e/custom-flashcards-crud.spec.ts`
+- [x] 2.8 Editing a card's definition shows the new text on its flashcard in the loop — e2e asserts the edited text in the manage list; same deck path feeds the flashcard
+- [x] 2.9 Deleting a card removes it from the list and from a matching queue — automated in `e2e/custom-flashcards-crud.spec.ts`
+- [x] 2.10 No perceptible lag opening the manage view or submitting — e2e runs the full flow in ~2.5s with no fixed waits; not separately asserted

@@ -1,9 +1,9 @@
 ---
 change_id: custom-flashcards
 title: Custom flashcards — user adds / edits / removes their own word cards that rank alongside the seed deck
-status: implementing
+status: implemented
 created: 2026-09-08
-updated: 2026-09-08
+updated: 2026-09-10
 archived_at: null
 ---
 
@@ -18,6 +18,12 @@ archived_at: null
   This keeps `addUserWord`/`updateUserWord`/`deleteUserWord` fail-safe (read-before-write
   rejects before writing) instead of letting a corrupt read overwrite the whole list.
   The Phase 1 test for the corrupt-value case asserts the throw rather than `[]`.
+- **Phase 2 added an E2E test.** The plan scoped the manage UI as "manual-verified,
+  no integration tests". `e2e/custom-flashcards-crud.spec.ts` was added anyway because
+  add → rank → edit → delete is exactly the CRUD lifecycle this slice exists to prove;
+  it stands in for manual steps 2.4–2.9.
+- **Phase 2 web layout fix.** `manage-cards.tsx` adds 80px web-only top padding so its
+  controls clear the template's `position:absolute` web tab bar (`app-tabs.web.tsx`).
 
 ## Notes
 
