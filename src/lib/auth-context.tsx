@@ -1,6 +1,7 @@
 import type { AuthError, Session, User } from '@supabase/supabase-js';
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import { migrateLocalDataIfNeeded } from '@/lib/local-migration';
 import { supabase } from '@/lib/supabase';
 
 export type AuthResult = { ok: true } | { ok: false; message: string };
@@ -37,7 +38,15 @@ function authMessage(error: AuthError): string {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [initializing, setInitializing] = useState(true);
+  // The user id the one-shot first-login migration has settled for (success or
+  // logged failure). `loading` stays true until it matches the signed-in user,
+  // so the app does not mount and read the stores before pre-auth data is
+  // uploaded. Derived — no synchronous setState in the effect.
+  const [migratedFor, setMigratedFor] = useState<string | null>(null);
+
+  const userId = session?.user?.id ?? null;
+  const loading = initializing || (userId !== null && migratedFor !== userId);
 
   useEffect(() => {
     let active = true;
@@ -46,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
       setSession(data.session);
-      setLoading(false);
+      setInitializing(false);
     });
     const { data } = supabase.auth.onAuthStateChange((_event, next) => {
       setSession(next);
@@ -56,6 +65,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       data.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!userId || migratedFor === userId) {
+      return;
+    }
+    let cancelled = false;
+    migrateLocalDataIfNeeded(userId)
+      .catch((error: unknown) => {
+        console.warn('local data migration failed; will retry next sign-in', error);
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setMigratedFor(userId);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, migratedFor]);
 
   const signUp = useCallback(async (email: string, password: string): Promise<AuthResult> => {
     const { error } = await supabase.auth.signUp({ email, password });

@@ -591,33 +591,33 @@ initial load. No pagination, no indexes beyond the primary keys needed.
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Tests pass: `npm test`
-- [x] 2.4 `vocabulary-store.test.ts` covers remote-read→cache, network-failure→cache, upsert→cache, no-session throw
-- [x] 2.5 `user-vocabulary.test.ts` covers CRUD vs mock client, duplicate by (user_id,id), cache fallback, no-session throw
-- [x] 2.6 `getAllVocabulary` still returns seed ++ user rows
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — 8361b0d
+- [x] 2.2 Linting passes: `npm run lint` — 8361b0d
+- [x] 2.3 Tests pass: `npm test` — 8361b0d
+- [x] 2.4 `vocabulary-store.test.ts` covers remote-read→cache, network-failure→cache, upsert→cache, no-session throw — 8361b0d
+- [x] 2.5 `user-vocabulary.test.ts` covers CRUD vs mock client, duplicate by (user_id,id), cache fallback, no-session throw — 8361b0d
+- [x] 2.6 `getAllVocabulary` still returns seed ++ user rows — 8361b0d
 
 #### Manual
 
-- [x] 2.7 Add a card while signed in, refresh the app, it persists (from Supabase)
-- [x] 2.8 A second account sees a seed-only deck
-- [x] 2.9 Supabase table rows carry the correct `user_id`
-- [x] 2.10 Offline: loop renders from cache; marking shows the offline message and does not stick
+- [x] 2.7 Add a card while signed in, refresh the app, it persists (from Supabase) — 8361b0d
+- [x] 2.8 A second account sees a seed-only deck — 8361b0d
+- [x] 2.9 Supabase table rows carry the correct `user_id` — 8361b0d
+- [x] 2.10 Offline: loop renders from cache; marking shows the offline message and does not stick — 8361b0d
 
 ### Phase 3: First-login local-data adoption
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Tests pass: `npm test`
-- [ ] 3.4 `local-migration.test.ts` covers one-shot upload, idempotent second call, failure leaves the flag unset
+- [x] 3.1 Type checking passes: `npx tsc --noEmit`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Tests pass: `npm test`
+- [x] 3.4 `local-migration.test.ts` covers one-shot upload, idempotent second call, failure leaves the flag unset
 
 #### Manual
 
-- [ ] 3.5 First sign-in on a build with pre-auth local data uploads it to the account
-- [ ] 3.6 Sign out/in causes no duplicate upload; data intact
+- [x] 3.5 First sign-in on a build with pre-auth local data uploads it to the account
+- [x] 3.6 Sign out/in causes no duplicate upload; data intact
 
 ### Phase 4: Foundation docs + test-plan risks + e2e
 

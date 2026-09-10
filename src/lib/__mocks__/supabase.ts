@@ -18,9 +18,10 @@ const NETWORK_ERROR = { message: 'network error', code: 'PGRST000' };
 class Query {
   private op: 'select' | 'insert' | 'upsert' | 'update' | 'delete' = 'select';
   private filters: [string, unknown][] = [];
-  private payload: Row | null = null;
+  private payload: Row | Row[] | null = null;
   private single = false;
   private conflictKeys: string[] = [];
+  private ignoreDuplicates = false;
 
   constructor(private table: 'known_state' | 'user_words') {}
 
@@ -43,10 +44,11 @@ class Query {
     this.payload = row;
     return this;
   }
-  upsert(row: Row, opts?: { onConflict?: string }) {
+  upsert(row: Row | Row[], opts?: { onConflict?: string; ignoreDuplicates?: boolean }) {
     this.op = 'upsert';
     this.payload = row;
     this.conflictKeys = (opts?.onConflict ?? '').split(',').map((k) => k.trim()).filter(Boolean);
+    this.ignoreDuplicates = opts?.ignoreDuplicates ?? false;
     return this;
   }
   update(row: Row) {
@@ -83,14 +85,20 @@ class Query {
       return { data: [{ ...(this.payload as Row) }], error: null };
     }
     if (this.op === 'upsert') {
-      const payload = this.payload as Row;
-      const index = rows.findIndex((row) => this.conflictKeys.every((key) => row[key] === payload[key]));
-      if (index >= 0) {
-        rows[index] = { ...rows[index], ...payload };
-      } else {
-        rows.push({ ...payload });
+      const list = Array.isArray(this.payload) ? this.payload : [this.payload as Row];
+      for (const payload of list) {
+        const index = rows.findIndex((row) =>
+          this.conflictKeys.every((key) => row[key] === payload[key]),
+        );
+        if (index >= 0) {
+          if (!this.ignoreDuplicates) {
+            rows[index] = { ...rows[index], ...payload };
+          }
+        } else {
+          rows.push({ ...payload });
+        }
       }
-      return { data: [{ ...payload }], error: null };
+      return { data: list.map((payload) => ({ ...payload })), error: null };
     }
     if (this.op === 'update') {
       const affected = rows.filter(this.matches);

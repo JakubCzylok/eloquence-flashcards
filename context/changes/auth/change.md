@@ -88,3 +88,22 @@ External setup the user must do (cannot be automated here):
   isolation smoke (account B cannot see account A's card) only passes if RLS +
   `user_id` scoping are correct. Not asserted against the REST API directly (the
   anon key can't read `to authenticated` rows).
+
+### Phase 3
+
+- **`AuthProvider` derives `loading`** rather than holding a `migrating` boolean.
+  A synchronous `setMigrating(true)` in the migration effect trips
+  `react-hooks/set-state-in-effect`. Instead a `migratedFor` state records the
+  user id migration has settled for, and `loading = initializing || (userId !==
+  null && migratedFor !== userId)` — the only setState in the effect is
+  `setMigratedFor` inside `.finally()` (async). Same fix pattern as Phase 2's
+  `reloadStores`.
+- **Migration runs in an effect keyed on `userId`**, not in the
+  `onAuthStateChange` callback (supabase-js warns against `await`ing inside that
+  callback — deadlock risk). `loading` stays true until it finishes, so
+  `HomeScreen` cannot mount and read the stores first.
+- **Parse is lenient** — `parseKnownMap` / `parseUserWords` return `{}` / `[]`
+  on any malformed legacy value (best-effort migration of possibly-stale data),
+  never throw.
+- **The migrated flag is set even with nothing to migrate**, so a clean install
+  does not re-check the legacy keys on every sign-in.
