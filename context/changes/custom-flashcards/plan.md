@@ -377,16 +377,16 @@ branch runs before S-02 merges, add the mock here and expect a same-content merg
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Tests pass: `npm test`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — 11e3763
+- [x] 2.2 Linting passes: `npm run lint` — 11e3763
+- [x] 2.3 Tests pass: `npm test` — 11e3763
 
 #### Manual
 
-- [x] 2.4 "Manage my cards" opens the manage view; "Back" returns to input — automated in `e2e/custom-flashcards-crud.spec.ts`
-- [x] 2.5 Adding a card (word + definition + category) lists it — automated in `e2e/custom-flashcards-crud.spec.ts`
-- [x] 2.6 The new card appears in a category-matching loop queue and can be marked known/unknown (and sinks after "Know it") — e2e covers "appears in queue"; "sinks when known" covered by unit test `sinks a known user card below equally-relevant unknown words`
-- [x] 2.7 Adding a duplicate word shows "already in your deck" and does not add — automated in `e2e/custom-flashcards-crud.spec.ts`
-- [x] 2.8 Editing a card's definition shows the new text on its flashcard in the loop — e2e asserts the edited text in the manage list; same deck path feeds the flashcard
-- [x] 2.9 Deleting a card removes it from the list and from a matching queue — automated in `e2e/custom-flashcards-crud.spec.ts`
-- [x] 2.10 No perceptible lag opening the manage view or submitting — e2e runs the full flow in ~2.5s with no fixed waits; not separately asserted
+- [x] 2.4 "Manage my cards" opens the manage view; "Back" returns to input — automated in `e2e/custom-flashcards-crud.spec.ts` — 11e3763
+- [x] 2.5 Adding a card (word + definition + category) lists it — automated in `e2e/custom-flashcards-crud.spec.ts` — 11e3763
+- [x] 2.6 The new card appears in a category-matching loop queue and can be marked known/unknown (and sinks after "Know it") — e2e covers "appears in queue"; "sinks when known" covered by unit test `sinks a known user card below equally-relevant unknown words` — 11e3763
+- [x] 2.7 Adding a duplicate word shows "already in your deck" and does not add — automated in `e2e/custom-flashcards-crud.spec.ts` — 11e3763
+- [x] 2.8 Editing a card's definition shows the new text on its flashcard in the loop — e2e asserts the edited text in the manage list; same deck path feeds the flashcard — 11e3763
+- [x] 2.9 Deleting a card removes it from the list and from a matching queue — automated in `e2e/custom-flashcards-crud.spec.ts` — 11e3763
+- [x] 2.10 No perceptible lag opening the manage view or submitting — e2e runs the full flow in ~2.5s with no fixed waits; not separately asserted — 11e3763
