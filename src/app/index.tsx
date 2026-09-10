@@ -28,6 +28,9 @@ const errText = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;
 
 export default function HomeScreen() {
+  // The auth gate in _layout.tsx only mounts this screen with a session, and
+  // remounts it when the signed-in user changes — so the mount effect below is
+  // the per-user store load.
   const { signOut } = useAuth();
   const [phase, setPhase] = useState<Phase>('input');
   const [description, setDescription] = useState('');
@@ -95,8 +98,12 @@ export default function HomeScreen() {
 
   const handleDeleteCard = useCallback(
     async (id: string) => {
-      await deleteUserWord(id);
+      const result = await deleteUserWord(id);
+      if (!result.ok) {
+        setStoreError("You're offline — couldn't delete that card.");
+      }
       refreshDeck();
+      return result;
     },
     [refreshDeck],
   );

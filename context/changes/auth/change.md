@@ -60,3 +60,31 @@ External setup the user must do (cannot be automated here):
   follow-up. This matches the Expo + Supabase guide's common-case pattern.
 - **Test emails must use a real domain** (e.g. `@gmail.com`). Supabase's email
   validator rejects reserved TLDs like `.test` / `.example`.
+
+### Phase 2
+
+- **`deleteUserWord` signature changed** `Promise<void>` → `Promise<{ ok:
+  true } | { ok: false; reason: 'offline' }>`. A silent void return would hide a
+  failed delete; the caller (`index.tsx` / `ManageCards`) now surfaces an
+  offline failure. `ManageCards`'s `onDelete` prop type changed to match.
+- **New `'offline'` result reason** on `addUserWord` / `updateUserWord` /
+  `deleteUserWord` for no-session or network failure (these can't be `throw`n —
+  `ManageCards.submit` has no catch, a throw would be an unhandled rejection).
+  `ManageCards.REASON_MESSAGE` gained an `offline` entry.
+- **`setWordKnownState` does throw** (`NotAuthenticatedError` / a plain Error) —
+  `handleMark` already has a try/catch that surfaces it and skips the optimistic
+  update, so no reason-shape needed there.
+- **`reloadStores` did NOT get a `userId` dependency** (the plan's Phase 2
+  change #5). The auth gate in `_layout.tsx` remounts `HomeScreen` on user
+  change, so its mount effect already re-runs per user; adding `userId` tripped
+  `react-hooks/exhaustive-deps` for no behavioural gain.
+- **`writeQueue` removed from both stores.** Single-row Supabase upserts/inserts
+  have no read-merge-write race; the AsyncStorage cache patch is best-effort.
+- **Test mock**: `src/lib/__mocks__/supabase.ts` — an in-memory Auth + PostgREST
+  stand-in with `__setUser` / `__setOffline` / `__reset` / `__db`. Tests reach
+  the live instance via `jest.requireMock` (a direct import of the `__mocks__`
+  path is a separate module and does not share state).
+- **2.9** ("rows carry the right `user_id`") verified indirectly: the 2.8
+  isolation smoke (account B cannot see account A's card) only passes if RLS +
+  `user_id` scoping are correct. Not asserted against the REST API directly (the
+  anon key can't read `to authenticated` rows).

@@ -48,3 +48,12 @@ export async function currentUserId(): Promise<string | null> {
   const { data } = await supabase.auth.getSession();
   return data.session?.user.id ?? null;
 }
+
+/** The current user's id, or throw `NotAuthenticatedError`. Use before a write. */
+export async function requireUserId(): Promise<string> {
+  const id = await currentUserId();
+  if (!id) {
+    throw new NotAuthenticatedError();
+  }
+  return id;
+}

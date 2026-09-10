@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { beforeEach, describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 import { SEED_VOCABULARY } from '@/constants/vocabulary';
 import {
@@ -11,9 +11,15 @@ import {
   UserWordsReadError,
 } from '@/lib/user-vocabulary';
 
-const USER_WORDS_KEY = 'vocabulary-user-words';
+jest.mock('@/lib/supabase');
+const { __db, __reset, __setOffline, __setUser } =
+  jest.requireMock<typeof import('@/lib/__mocks__/supabase')>('@/lib/supabase');
+
+const USER_WORDS_CACHE_KEY = 'vocabulary-user-words';
+const USER = 'user-1';
 
 beforeEach(async () => {
+  __reset();
   await AsyncStorage.clear();
 });
 
@@ -31,31 +37,53 @@ describe('slug', () => {
 });
 
 describe('getUserWords', () => {
-  it('returns [] when the key has never been written', async () => {
+  it('returns [] when there is no session', async () => {
     await expect(getUserWords()).resolves.toEqual([]);
   });
 
-  it('round-trips a stored array of cards', async () => {
-    const cards = [
+  it('reads the user rows from Supabase and refreshes the cache', async () => {
+    __setUser(USER);
+    __db.user_words.push({
+      user_id: USER,
+      id: 'user-poise',
+      word: 'poise',
+      definition: 'composure',
+      category: 'academic',
+    });
+
+    await expect(getUserWords()).resolves.toEqual([
       { id: 'user-poise', word: 'poise', definition: 'composure', category: 'academic' },
-    ];
-    await AsyncStorage.setItem(USER_WORDS_KEY, JSON.stringify(cards));
-    await expect(getUserWords()).resolves.toEqual(cards);
+    ]);
+    const cached = JSON.parse((await AsyncStorage.getItem(USER_WORDS_CACHE_KEY)) ?? 'null');
+    expect(cached).toEqual([
+      { id: 'user-poise', word: 'poise', definition: 'composure', category: 'academic' },
+    ]);
   });
 
-  it('throws UserWordsReadError on an unparseable value — does not swallow to []', async () => {
-    await AsyncStorage.setItem(USER_WORDS_KEY, 'not json {');
-    await expect(getUserWords()).rejects.toBeInstanceOf(UserWordsReadError);
+  it('falls back to the cache when the request fails', async () => {
+    __setUser(USER);
+    await AsyncStorage.setItem(
+      USER_WORDS_CACHE_KEY,
+      JSON.stringify([{ id: 'user-x', word: 'x', definition: 'd', category: 'academic' }]),
+    );
+    __setOffline(true);
+
+    await expect(getUserWords()).resolves.toEqual([
+      { id: 'user-x', word: 'x', definition: 'd', category: 'academic' },
+    ]);
   });
 
-  it('throws UserWordsReadError when the stored JSON is not an array of cards', async () => {
-    await AsyncStorage.setItem(USER_WORDS_KEY, JSON.stringify({ not: 'an array' }));
+  it('throws UserWordsReadError on a corrupt cache while offline', async () => {
+    __setUser(USER);
+    await AsyncStorage.setItem(USER_WORDS_CACHE_KEY, 'not json {');
+    __setOffline(true);
     await expect(getUserWords()).rejects.toBeInstanceOf(UserWordsReadError);
   });
 });
 
 describe('addUserWord', () => {
-  it('persists a new card and returns it', async () => {
+  it('persists a new card for the user and returns it', async () => {
+    __setUser(USER);
     const result = await addUserWord({
       word: 'gravitas',
       definition: 'a serious, dignified manner',
@@ -71,79 +99,73 @@ describe('addUserWord', () => {
         category: 'academic',
       },
     });
-    const stored = await getUserWords();
-    expect(stored).toHaveLength(1);
-    expect(stored[0].id).toBe('user-gravitas');
+    expect(__db.user_words).toEqual([
+      {
+        user_id: USER,
+        id: 'user-gravitas',
+        word: 'gravitas',
+        definition: 'a serious, dignified manner',
+        category: 'academic',
+      },
+    ]);
   });
 
-  it('trims the word and definition before storing', async () => {
-    const result = await addUserWord({
-      word: '  poise  ',
-      definition: '  calm self-possession  ',
-      category: 'academic',
-    });
-
-    expect(result.ok).toBe(true);
-    const [stored] = await getUserWords();
-    expect(stored.word).toBe('poise');
-    expect(stored.definition).toBe('calm self-possession');
-    expect(stored.id).toBe('user-poise');
+  it('trims the word and definition', async () => {
+    __setUser(USER);
+    await addUserWord({ word: '  poise  ', definition: '  calm  ', category: 'academic' });
+    expect(__db.user_words[0]).toMatchObject({ id: 'user-poise', word: 'poise', definition: 'calm' });
   });
 
-  it('rejects a blank word or definition as "empty"', async () => {
+  it('rejects blank / slug-to-empty as "empty" — before touching the session', async () => {
     await expect(
       addUserWord({ word: '   ', definition: 'd', category: 'academic' }),
     ).resolves.toEqual({ ok: false, reason: 'empty' });
-    await expect(
-      addUserWord({ word: 'w', definition: '   ', category: 'academic' }),
-    ).resolves.toEqual({ ok: false, reason: 'empty' });
-    await expect(getUserWords()).resolves.toEqual([]);
-  });
-
-  it('rejects a word that slugs to empty as "empty"', async () => {
     await expect(
       addUserWord({ word: '!!!', definition: 'd', category: 'academic' }),
     ).resolves.toEqual({ ok: false, reason: 'empty' });
   });
 
   it('rejects a word already in the seed deck as "duplicate"', async () => {
-    const seedWord = SEED_VOCABULARY[0].word;
+    __setUser(USER);
     await expect(
-      addUserWord({ word: seedWord, definition: 'my own take', category: 'academic' }),
+      addUserWord({ word: SEED_VOCABULARY[0].word, definition: 'mine', category: 'academic' }),
     ).resolves.toEqual({ ok: false, reason: 'duplicate' });
   });
 
-  it('rejects a word already added by the user as "duplicate"', async () => {
+  it('rejects a word the user already added as "duplicate"', async () => {
+    __setUser(USER);
     await addUserWord({ word: 'gravitas', definition: 'first', category: 'academic' });
     await expect(
       addUserWord({ word: 'Gravitas', definition: 'second', category: 'business' }),
     ).resolves.toEqual({ ok: false, reason: 'duplicate' });
-    expect(await getUserWords()).toHaveLength(1);
+    expect(__db.user_words).toHaveLength(1);
   });
 
-  it('serializes overlapping adds without dropping any', async () => {
-    await Promise.all([
-      addUserWord({ word: 'alpha', definition: 'a', category: 'academic' }),
-      addUserWord({ word: 'beta', definition: 'b', category: 'academic' }),
-      addUserWord({ word: 'gamma', definition: 'c', category: 'academic' }),
-    ]);
-    const ids = (await getUserWords()).map((w) => w.id).sort();
-    expect(ids).toEqual(['user-alpha', 'user-beta', 'user-gamma']);
+  it('returns "offline" with no session', async () => {
+    await expect(
+      addUserWord({ word: 'gravitas', definition: 'd', category: 'academic' }),
+    ).resolves.toEqual({ ok: false, reason: 'offline' });
+  });
+
+  it('returns "offline" on a network failure', async () => {
+    __setUser(USER);
+    __setOffline(true);
+    await expect(
+      addUserWord({ word: 'gravitas', definition: 'd', category: 'academic' }),
+    ).resolves.toEqual({ ok: false, reason: 'offline' });
   });
 });
 
 describe('updateUserWord', () => {
-  it('changes definition and category but keeps id and word', async () => {
+  it('changes definition + category, keeps id and word', async () => {
+    __setUser(USER);
     await addUserWord({ word: 'gravitas', definition: 'old', category: 'academic' });
 
-    const result = await updateUserWord('user-gravitas', {
-      definition: 'new',
-      category: 'business',
-    });
-
-    expect(result).toEqual({ ok: true });
-    const [stored] = await getUserWords();
-    expect(stored).toEqual({
+    await expect(
+      updateUserWord('user-gravitas', { definition: 'new', category: 'business' }),
+    ).resolves.toEqual({ ok: true });
+    expect(__db.user_words[0]).toEqual({
+      user_id: USER,
       id: 'user-gravitas',
       word: 'gravitas',
       definition: 'new',
@@ -152,34 +174,44 @@ describe('updateUserWord', () => {
   });
 
   it('rejects an unknown id as "not-found"', async () => {
+    __setUser(USER);
     await expect(
       updateUserWord('user-nope', { definition: 'x', category: 'academic' }),
     ).resolves.toEqual({ ok: false, reason: 'not-found' });
   });
 
   it('rejects a blank definition as "empty"', async () => {
+    __setUser(USER);
     await addUserWord({ word: 'gravitas', definition: 'old', category: 'academic' });
     await expect(
       updateUserWord('user-gravitas', { definition: '   ', category: 'academic' }),
     ).resolves.toEqual({ ok: false, reason: 'empty' });
-    expect((await getUserWords())[0].definition).toBe('old');
+    expect(__db.user_words[0].definition).toBe('old');
+  });
+
+  it('returns "offline" with no session', async () => {
+    await expect(
+      updateUserWord('user-gravitas', { definition: 'x', category: 'academic' }),
+    ).resolves.toEqual({ ok: false, reason: 'offline' });
   });
 });
 
 describe('deleteUserWord', () => {
   it('removes only the target card', async () => {
+    __setUser(USER);
     await addUserWord({ word: 'alpha', definition: 'a', category: 'academic' });
     await addUserWord({ word: 'beta', definition: 'b', category: 'academic' });
 
-    await deleteUserWord('user-alpha');
-
-    const ids = (await getUserWords()).map((w) => w.id);
-    expect(ids).toEqual(['user-beta']);
+    await expect(deleteUserWord('user-alpha')).resolves.toEqual({ ok: true });
+    expect(__db.user_words.map((r) => r.id)).toEqual(['user-beta']);
   });
 
-  it('is a no-op for an id that is not present', async () => {
-    await addUserWord({ word: 'alpha', definition: 'a', category: 'academic' });
-    await deleteUserWord('user-missing');
-    expect(await getUserWords()).toHaveLength(1);
+  it('is a success for an id that is not present', async () => {
+    __setUser(USER);
+    await expect(deleteUserWord('user-missing')).resolves.toEqual({ ok: true });
+  });
+
+  it('returns "offline" with no session', async () => {
+    await expect(deleteUserWord('user-x')).resolves.toEqual({ ok: false, reason: 'offline' });
   });
 });

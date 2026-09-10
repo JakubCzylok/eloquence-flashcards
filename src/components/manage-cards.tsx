@@ -15,7 +15,7 @@ export type ManageCardsProps = {
   userWords: VocabularyWord[];
   onAdd: (input: AddUserWordInput) => Promise<SubmitResult>;
   onUpdate: (id: string, input: UpdateUserWordInput) => Promise<SubmitResult>;
-  onDelete: (id: string) => Promise<void>;
+  onDelete: (id: string) => Promise<SubmitResult>;
   onClose: () => void;
 };
 
@@ -23,6 +23,7 @@ const REASON_MESSAGE: Record<string, string> = {
   duplicate: 'That word is already in your deck.',
   empty: 'Fill in both the word and its definition.',
   'not-found': 'That card no longer exists.',
+  offline: 'You’re offline — try again when you have a connection.',
 };
 
 /**
@@ -88,7 +89,10 @@ export function ManageCards({ userWords, onAdd, onUpdate, onDelete, onClose }: M
     if (editingId === id) {
       resetForm();
     }
-    await onDelete(id);
+    const result = await onDelete(id);
+    if (!result.ok) {
+      setError(REASON_MESSAGE[result.reason ?? ''] ?? 'Could not delete that card.');
+    }
   };
 
   return (

@@ -575,35 +575,35 @@ initial load. No pagination, no indexes beyond the primary keys needed.
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx tsc --noEmit`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Tests pass: `npm test`
-- [x] 1.4 `auth-context.test.tsx` covers loading→no-session and a mapped sign-in failure
+- [x] 1.1 Type checking passes: `npx tsc --noEmit` — cd651f7
+- [x] 1.2 Linting passes: `npm run lint` — cd651f7
+- [x] 1.3 Tests pass: `npm test` — cd651f7
+- [x] 1.4 `auth-context.test.tsx` covers loading→no-session and a mapped sign-in failure — cd651f7
 
 #### Manual
 
-- [x] 1.5 Cold start with no session shows the login screen (no tab bar) — verified via headless smoke against the live project
-- [x] 1.6 "Create account" with a fresh email lands in the ranking loop — verified via headless smoke (after enabling signups + email autoconfirm)
-- [x] 1.7 Sign out returns to the login screen — verified via headless smoke
-- [x] 1.8 Wrong password shows an inline error, no crash — verified via headless smoke
+- [x] 1.5 Cold start with no session shows the login screen (no tab bar) — verified via headless smoke against the live project — cd651f7
+- [x] 1.6 "Create account" with a fresh email lands in the ranking loop — verified via headless smoke (after enabling signups + email autoconfirm) — cd651f7
+- [x] 1.7 Sign out returns to the login screen — verified via headless smoke — cd651f7
+- [x] 1.8 Wrong password shows an inline error, no crash — verified via headless smoke — cd651f7
 
 ### Phase 2: Move known_state + user_words to Supabase with read cache
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Tests pass: `npm test`
-- [ ] 2.4 `vocabulary-store.test.ts` covers remote-read→cache, network-failure→cache, upsert→cache, no-session throw
-- [ ] 2.5 `user-vocabulary.test.ts` covers CRUD vs mock client, duplicate by (user_id,id), cache fallback, no-session throw
-- [ ] 2.6 `getAllVocabulary` still returns seed ++ user rows
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Tests pass: `npm test`
+- [x] 2.4 `vocabulary-store.test.ts` covers remote-read→cache, network-failure→cache, upsert→cache, no-session throw
+- [x] 2.5 `user-vocabulary.test.ts` covers CRUD vs mock client, duplicate by (user_id,id), cache fallback, no-session throw
+- [x] 2.6 `getAllVocabulary` still returns seed ++ user rows
 
 #### Manual
 
-- [ ] 2.7 Add a card while signed in, refresh the app, it persists (from Supabase)
-- [ ] 2.8 A second account sees a seed-only deck
-- [ ] 2.9 Supabase table rows carry the correct `user_id`
-- [ ] 2.10 Offline: loop renders from cache; marking shows the offline message and does not stick
+- [x] 2.7 Add a card while signed in, refresh the app, it persists (from Supabase)
+- [x] 2.8 A second account sees a seed-only deck
+- [x] 2.9 Supabase table rows carry the correct `user_id`
+- [x] 2.10 Offline: loop renders from cache; marking shows the offline message and does not stick
 
 ### Phase 3: First-login local-data adoption
 
