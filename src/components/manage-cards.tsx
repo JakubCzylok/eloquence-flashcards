@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedTextInput } from '@/components/themed-text-input';
@@ -215,10 +215,7 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: Spacing.three,
-    // Clear the absolutely-positioned web tab bar (app-tabs.web.tsx) that
-    // overlays the top of the page; on native the tabs sit at the bottom.
-    paddingTop: Platform.OS === 'web' ? 80 : Spacing.four,
-    paddingBottom: Spacing.four,
+    paddingVertical: Spacing.four,
   },
   link: {
     alignSelf: 'flex-start',
