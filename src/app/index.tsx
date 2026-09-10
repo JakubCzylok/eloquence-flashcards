@@ -16,6 +16,7 @@ import {
   updateUserWord,
   UpdateUserWordInput,
 } from '@/lib/user-vocabulary';
+import { useAuth } from '@/lib/auth-context';
 import { rankVocabulary } from '@/lib/vocabulary-ranking';
 import { getAllVocabulary, getKnownState, setWordKnownState } from '@/lib/vocabulary-store';
 
@@ -27,6 +28,7 @@ const errText = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;
 
 export default function HomeScreen() {
+  const { signOut } = useAuth();
   const [phase, setPhase] = useState<Phase>('input');
   const [description, setDescription] = useState('');
   const [queue, setQueue] = useState<VocabularyWord[]>([]);
@@ -196,6 +198,16 @@ export default function HomeScreen() {
               accessibilityLabel="Manage my cards">
               <ThemedText type="small" themeColor="textSecondary" style={styles.textLink}>
                 Manage my cards
+              </ThemedText>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                void signOut();
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Sign out">
+              <ThemedText type="small" themeColor="textSecondary" style={styles.textLink}>
+                Sign out
               </ThemedText>
             </Pressable>
           </ThemedView>
