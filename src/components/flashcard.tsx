@@ -22,21 +22,29 @@ export function Flashcard({ word, known, onMark }: FlashcardProps) {
         <ThemedText type="small" themeColor="textSecondary">
           {word.category}
         </ThemedText>
-        <ThemedText type="subtitle" style={styles.word}>
+        <ThemedText type="subtitle" style={styles.word} accessibilityRole="header">
           {word.word}
         </ThemedText>
         <ThemedText style={styles.definition}>{word.definition}</ThemedText>
       </ThemedView>
 
       <ThemedView style={styles.actions}>
-        <Pressable style={styles.actionPressable} onPress={() => onMark(true)}>
+        <Pressable
+          style={styles.actionPressable}
+          onPress={() => onMark(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Know it">
           <ThemedView
             type={known === true ? 'backgroundSelected' : 'backgroundElement'}
             style={styles.actionButton}>
             <ThemedText type="smallBold">Know it</ThemedText>
           </ThemedView>
         </Pressable>
-        <Pressable style={styles.actionPressable} onPress={() => onMark(false)}>
+        <Pressable
+          style={styles.actionPressable}
+          onPress={() => onMark(false)}
+          accessibilityRole="button"
+          accessibilityLabel="Don't know it">
           <ThemedView
             type={known === false ? 'backgroundSelected' : 'backgroundElement'}
             style={styles.actionButton}>

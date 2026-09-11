@@ -1,5 +1,26 @@
 {
   "enabledPlugins": {
     "expo@claude-plugins-official": true
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-edit-lint.sh",
+            "timeout": 60,
+            "statusMessage": "Linting edited file..."
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-edit-typecheck.sh",
+            "timeout": 180,
+            "statusMessage": "Type-checking project..."
+          }
+        ]
+      }
+    ]
   }
 }

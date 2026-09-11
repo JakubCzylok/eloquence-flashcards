@@ -1,5 +1,7 @@
 # 10xDevs 3.0 — Lesson Artifacts
 
+> **This repo also hosts the 10xBuilder certification MVP: Eloquence Flashcards** (`src/`, `e2e/`), a spaced-repetition vocabulary app built with the workflow below. See `context/foundation/prd.md` for the product spec, `context/foundation/roadmap.md` for the build sequence, and `context/foundation/test-plan.md` for the test strategy.
+
 Offline fallback artifacts for 10xDevs 3.0 students. Two variants:
 
 - **`claude-code/`** — versions tuned for Claude Code (SKILL.md includes the `allowed-tools` frontmatter and other Claude-specific bits).
